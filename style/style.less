@@ -1,0 +1,47 @@
+.animate(@t:0.3s){
+	-webkit-transition-duration: @t;
+	transition-duration: @t;
+}
+
+@font-face{
+	font-family: "gotham";
+	src: url("assets/fonts/gotham.svg"),
+	     url("assets/fonts/gotham.eot"); /* IE9 */
+}
+
+html,body {
+	background-color: #111;
+}
+
+.bg-border {
+	border-left: 2px solid #aaa;
+	height: 900px;
+	position: absolute; top: 0; left: 70px;
+}
+
+.rankings {
+	position: absolute; top: 0; left: 70px;
+	height: 300px; width: 200px;
+	margin: 10px auto;
+
+	.team {
+		color: #fff;
+		position: relative;
+		left: 0;
+		font: 300 13px/1.4em "gotham", sans-serif;
+		border-left: 2px solid #666;
+		cursor: default;
+		.animate();
+
+		img { height: 32px; width: 32px; vertical-align: middle; }
+		.rank { position: absolute; left: -25px; top: 8px; color: #aaa; }
+		.name { margin-left: 10px; }
+		.score { color: #666; }
+
+		&:hover { opacity: 1 !important; z-index: 1000; }
+	}
+
+	&:hover {
+		.team {opacity: 0.2;}
+	}
+}
