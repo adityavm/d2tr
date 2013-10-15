@@ -1,41 +1,52 @@
 "use strict"
 
-angular.module("d2tr", [])
-.factory("rankings", ["$http", function($http){
-	function Rankings(){ 
-		this.data = [];
-		this.p = null;
-		this.xhr = function(){
-			var $this = this;
-			this.p = $http({method:"GET",url:"api/getRanks.php"});
-			this.p.then(function(response){ 
-				for(var i=0,l=response.data.jd.length;i<l;i++){
-					var xml = $(response.data.jd[i]),
-						logo = xml.find("img").attr("src"),
-						team = $.trim(xml.find("td").eq(1).text()),
-						rank = $.trim(xml.find("td.textRight").text());
+angular.module("d2tr")
+.service("rankings", ["$http", function($http){
+	var obj = {data: [], xhr: null};
 
-					$this.data.push({
-						logo: logo,
-						team: team,
-						rank: rank
-					})
-				}
+	obj.xhr = $http({method:"GET",url:"api/getRanks.php"});
+
+	obj.xhr.then(function(response){ 
+		for(var i=0,l=response.data.jd.length;i<l;i++){
+			var xml = $(response.data.jd[i]),
+				logo = xml.find("img").attr("src"),
+				id = (function(){
+					var a = xml.attr("href");
+					a = a.split("/");
+					a = a[a.length-1];
+					return parseInt(a.match(/(\d+)/)[1]);
+				})(),
+				team = $.trim(xml.find("td").eq(1).text()),
+				score = parseInt($.trim(xml.find("td.textRight").text()));
+
+			obj.data.push({
+				id: id,
+				logo: logo,
+				team: team,
+				score: score
 			})
 		}
+	})
 
-		this.xhr();
-	}
-	return Rankings;
+	return obj;
 }])
 .directive("rankings", function(){
 	return {
 		restrict: "E",
-		controller: ["$scope", "rankings", function($scope, Rankings){
-			var r = new Rankings();	
-			r.p.then(function(){ 
-				$scope.teams = r.data;
-			});
+		controller: ["$scope", "rankings", "history", function($scope, rankings, history){
+			history.xhr.then(function(){
+				var hist = history.data;
+				rankings.xhr.then(function(){ 
+					var ranking = rankings.data;
+
+					for(var i=0,l=ranking.length;i<l;i++){
+						var r = ranking[i];
+						ranking[i].history = hist[ranking[i].id].toString();
+					}
+
+					$scope.teams = ranking;
+				});
+			})
 		}]
 	}
 })
@@ -48,9 +59,36 @@ angular.module("d2tr", [])
 				first = teams[0],
 				last = teams[teams.length-1];
 
-			var range = first.rank-last.rank,
-				pos = (first.rank-teams[i].rank)/range * 100;
+			var range = first.score-last.score,
+				pos = (first.score-teams[i].score)/range * 100;
 				ele.css("top", pos+"%");
 		}
 	}
 }])
+.directive("drawHistory", function(){
+	return {
+		restrict: "A",
+		scope: {
+			data: "=drawHistory"
+		},
+		link: function post(scope,ele,attrs){
+			function formatData(){
+				var arr = scope.data.split(","),
+					first = parseInt(arr[0]);
+
+				for(var i=0,l=arr.length;i<l;i++)
+					arr[i] = first-parseInt(arr[i]);
+
+				return arr.toString();
+			}
+
+			$(ele).peity("line", {strokeColour: "#9c3425", colour: "transparent", height: "10px"});
+			$(ele).text(formatData());
+
+			scope.$watch("data", function(){
+				$(ele).text(formatData())
+				$(ele).change();
+			})
+		}
+	}
+})

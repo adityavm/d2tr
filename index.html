@@ -2,7 +2,10 @@
 <html>
 <head>
 	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.8/angular.min.js" type="text/javascript"></script>
+	<script type="text/javascript">angular.module("d2tr",[]);</script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" type="text/javascript"></script>
+	<script src="js/piety.js" type="text/javascript"></script>
+	<script src="js/api.js" type="text/javascript"></script>
 	<script src="js/app.js" type="text/javascript"></script>
 	<link href="style/style.css" type="text/css" rel="stylesheet">
 </head>
@@ -14,7 +17,8 @@
 				<img ng-src="{{t.logo}}">
 				<span class="rank">{{$index+1}}</span>
 				<span class="name">{{t.team}}</span>	
-				<span class="score">({{t.rank}})</span>
+				<span class="score">({{t.score}})</span>
+				<span class="history" draw-history="t.history"></span>
 			</div>
 		</div>
 	</rankings>
