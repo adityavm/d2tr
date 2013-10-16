@@ -40,8 +40,9 @@ angular.module("d2tr")
 					var ranking = rankings.data;
 
 					for(var i=0,l=ranking.length;i<l;i++){
-						var r = ranking[i];
-						ranking[i].history = hist[ranking[i].id].toString();
+						var r = ranking[i],
+							h = hist[ranking[i].id] ? hist[ranking[i].id].concat(ranking[i].score) : [ranking[i].score];
+						ranking[i].history = h.toString();
 					}
 
 					$scope.teams = ranking;
@@ -77,7 +78,7 @@ angular.module("d2tr")
 					first = parseInt(arr[0]);
 
 				for(var i=0,l=arr.length;i<l;i++)
-					arr[i] = first-parseInt(arr[i]);
+					arr[i] = parseInt(arr[i])-first;
 
 				return arr.toString();
 			}

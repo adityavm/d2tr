@@ -9,13 +9,14 @@ angular.module("d2tr")
 		});
 
 	var processHistory = function(data){
-		var week = 604800000;
-		var now = +new Date();
-		var lastSave = new Date(data.timestamp);
+		var week = 604800000,
+			day = 86400000,
+			now = +new Date(),
+			lastSave = new Date(data.timestamp);
 		/* store new rank if a week has gone by
 		   since last save
 		*/
-		if(now - lastSave.getTime() > week)
+		if(now - lastSave.getTime() > day)
 			rankings.xhr.then(function(){
 				var r = rankings.data,
 					output = {};
