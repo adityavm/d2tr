@@ -22,7 +22,7 @@ angular.module("d2tr")
 					output = {};
 
 				for(var i=0,l=r.length;i<l;i++)
-					output[r[i].id] = data[r[i].id].concat([r[i].score]);
+					output[r[i].id] = data[r[i].id] ? data[r[i].id].concat([r[i].score]) : [r[i].score];
 
 				output["timestamp"] = now;
 				obj.store(output);
